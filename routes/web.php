@@ -6,6 +6,9 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TimeslotController;
 use App\Http\Controllers\userController;
 use App\Http\Controllers\VenueController;
+use App\Models\Group;
+use App\Models\Timeslot;
+use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -42,19 +45,28 @@ Route::middleware('auth')->group(function () {
     Route::get('/group/{group}/edit', [GroupController::class, 'edit'])->name('group.edit');
     Route::patch('/group/{group}', [GroupController::class, 'update'])->name('group.update');
     Route::post('/timeslot/validate', [TimeslotController::class, 'validate'])->name('timeslot.validate');
+    Route::delete('/timeslot/{timeslot}', [TimeslotController::class, 'destroy'])->name('timeslot.delete');
     Route::post('/timeslot/{group}/store', [TimeslotController::class, 'store'])->name('timeslot.store');
     Route::get('/user/getUsers', [userController::class, 'getUsers'])->name('user.getUsers');
 });
 
 Route::get('/examples', function () {
+
+
     $listitems = [
         ['value' => 'male', 'label' => 'Male'],
         ['value' => 'female', 'label' => 'Female'],
         ['value' => 'not_binary', 'label' => 'Non binary'],
         ['value' => 'prefer_no_say', 'label' => 'Prefer not to say']
     ];
-    //$listitems = (object) ['name' => 'test'];
-    //dd($listitems->name);
+
+    $timeslot = Timeslot::with('attachecdUsers')->where('id', '=', '37')->get();
+    $user = User::with('attachedTimeslots')->where('id', '=', '5')->get();
+    //dd($user);
+    //dd($timeslot);
+
+    $groupData =  Group::with(['timeslots.attachecdUsers', 'users.userProfile'])->find(26);
+    dd($groupData);
     return Inertia::render('examples', ['listitems' => (object)$listitems]);
 });
 Route::post('process', [dashboardController::class, 'store'])->name('process');

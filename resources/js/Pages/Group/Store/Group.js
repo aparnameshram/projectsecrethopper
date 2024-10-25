@@ -10,7 +10,9 @@ export const useGroupStore = defineStore('group', {
     getters: {
         allTimeslots(state) {
             return state.timeslots
-        }
+        },
+
+
     },
     actions: {
         insertTimeslot(timeslot) {
@@ -18,6 +20,9 @@ export const useGroupStore = defineStore('group', {
         },
         removeTimeslot(index) {
             this.timeslots.splice(index, 1)
+        },
+        getTimeslot(index) {
+            return this.timeslots[index]
         },
         insertUser(user) {
             this.users.push(user)

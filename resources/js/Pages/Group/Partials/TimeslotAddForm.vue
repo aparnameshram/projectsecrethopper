@@ -10,10 +10,14 @@ import { ref } from 'vue'
 import { Link } from '@inertiajs/vue3';
 import { defineEmits } from 'vue'
 import { useGroupStore } from '../Store/Group';
+import Modal from '@/Components/Modal.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import DangerButton from '@/Components/DangerButton.vue';
 
 //initialize group store
 const group = useGroupStore()
-
+const confirmingTimeslotDeletion = ref(false)
+const timeslotDeleteIndex = ref('')
 //timeslot form
 const form = useForm({
     date: '',
@@ -21,13 +25,13 @@ const form = useForm({
     end_time: '08:00:00 PM'
 
 });
-
+let timeslot = ref('')
 //function to validate timeslot data and to insert timeslot data to group store
 function insertTimeslot() {
     form.post(route('timeslot.validate') , {
         preserveScroll: true,
         onSuccess: () => {
-            group.insertTimeslot({date:form.date.toISOString().split('T')[0], start_time: form.start_time, end_time:form.end_time})
+            group.insertTimeslot({id:null,date:form.date.toISOString().split('T')[0], start_time: form.start_time, end_time:form.end_time})
         }
     })
 }
@@ -36,6 +40,36 @@ function insertTimeslot() {
 function removeTimeslot(index) {
     group.removeTimeslot(index)
 }
+
+/**
+ * open confirm deletion model based on the check if the timeslot is already saved in db ,
+ * if timeslot created on the fly but yet to be saved just delete it from dom
+ *
+ **/
+const confirmTimeslotDeletion = (index) => {
+    timeslot = group.getTimeslot(index)
+    timeslotDeleteIndex.value = index;
+    if (timeslot.id != null) {
+        confirmingTimeslotDeletion.value = true;
+    } else {
+        removeTimeslot(timeslotDeleteIndex)
+    }
+};
+
+const deleteTimeslot = (timeslot) => {
+    form.delete(route('timeslot.delete',timeslot.id), {
+        preserveScroll: true,
+        onSuccess: () => {
+            removeTimeslot(timeslotDeleteIndex)
+            closeModal()
+        },
+    });
+};
+
+const closeModal = () => {
+    confirmingTimeslotDeletion.value = false;
+
+};
 </script>
 <template>
 <div  class="bg-white p-4 shadow sm:rounded-lg sm:p-8 " >
@@ -131,7 +165,7 @@ function removeTimeslot(index) {
                     </td>
                     <td class="px-6 py-4">
                         <a
-                            @click="removeTimeslot(index)"
+                            @click="confirmTimeslotDeletion(index)"
                             as="button"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
@@ -146,4 +180,29 @@ function removeTimeslot(index) {
     </div>
 
 </div>
+<Modal :show="confirmingTimeslotDeletion" @close="closeModal" >
+    <div class="p-6">
+        <h2
+            class="text-lg font-medium text-gray-900"
+        >
+            Are you sure you want to delete timeslot from this group?
+        </h2>
+
+
+        <div class="mt-6 flex justify-end">
+            <SecondaryButton @click="closeModal">
+                Cancel
+            </SecondaryButton>
+
+            <DangerButton
+                class="ms-3"
+                :class="{ 'opacity-25': form.processing }"
+                :disabled="form.processing"
+                @click="deleteTimeslot(timeslot)"
+            >
+                Delete
+            </DangerButton>
+        </div>
+    </div>
+</Modal>
 </template>

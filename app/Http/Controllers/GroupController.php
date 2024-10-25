@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
+use App\Models\Timeslot;
 use App\Models\User;
 use App\Models\venue;
 use Illuminate\Http\Request;
@@ -96,8 +97,8 @@ class GroupController extends Controller
             $users = User::with('userProfile')->paginate($limit);
         }
 
-        $groupData =  Group::with(['timeslots', 'users.userProfile'])->find($group->id);
-        dd($groupData);
+        $groupData =  Group::with(['timeslots.attachecdUsers', 'users.userProfile'])->find($group->id);
+
         //render
         return Inertia::render('Group/edit', [
             'group'  => $groupData,
@@ -117,13 +118,21 @@ class GroupController extends Controller
         ]);
 
         $validated['show_in_search'] = $request->input('show_in_search', false);
-        //dd($request);
+
         $group->update($validated);
-        //dd($request);
 
         //create timeslots
         $request->collect('timeslots')->each(function (array $timeslot) use ($group) {
-            $group->timeslots()->create($timeslot);
+
+            Timeslot::updateOrCreate(
+                [
+                    'start_time' => $timeslot['start_time'],
+                    'end_time' => $timeslot['end_time'],
+                    'date' => $timeslot['date'],
+                    'group_id' => $group->id
+                ],
+                ['id' => $timeslot['id']]
+            );
         });
 
         //attach users to group

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
+use App\Models\Timeslot;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class TimeslotController extends Controller
 {
@@ -28,4 +30,16 @@ class TimeslotController extends Controller
     }
 
     public function store(request $request, Group $group) {}
+
+    public function destroy(Timeslot $timeslot, Request $request)
+    {
+        //authorize
+        Gate::authorize('delete', $timeslot);
+
+        Timeslot::destroy($timeslot->id);
+        //delete
+        return redirect()->back()->with([
+            'data' => 'Something you want to pass to front-end',
+        ]);
+    }
 }
