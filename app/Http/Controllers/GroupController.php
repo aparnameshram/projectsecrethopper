@@ -6,6 +6,7 @@ use App\Models\Group;
 use App\Models\Timeslot;
 use App\Models\User;
 use App\Models\venue;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Gate;
@@ -102,6 +103,8 @@ class GroupController extends Controller
         //render
         return Inertia::render('Group/edit', [
             'group'  => $groupData,
+            'timeslots' =>  Timeslot::with(['attachecdUsers'])->where('group_id', '=', $group->id)->get(),
+            'shoppers'  => fn() => User::with(['Group', 'userProfile'])->where('group_id', '=', $group->id)->latest(),
             'questionnaire' => Config::get('app.questionnaire'),
             'users' => $users,
             'selectOptions' => Config::get('app.selectOptions'),

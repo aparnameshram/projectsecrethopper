@@ -41,6 +41,15 @@ export const useGroupStore = defineStore('group', {
         },
         setUpExistingUsers(users) {
             this.existingUsers = users
+        },
+        getTimeslotFormatedDateTime(timeslot) {
+            let tDate = dayjs(new Date(timeslot.date)).format('YYYY-MM-DD')
+            let startStr = tDate + ' ' + timeslot.start_time
+            let endStr = tDate + ' ' + timeslot.end_time
+            let sTime = dayjs(startStr)
+            let eTime = dayjs(endStr)
+            return { date: tDate, start_time: sTime, end_time: eTime }
         }
+
     },
 })

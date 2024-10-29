@@ -14,7 +14,7 @@ import { usePage } from '@inertiajs/vue3'
 import { useGroupStore } from './Store/Group';
 import ShoppersList from './Partials/ShoppersList.vue';
 
-const props = defineProps(['group','questionnaire'])
+const props = defineProps(['group','questionnaire','timeslots'])
 const uniqueInstructions = computed(() => usePage().props.questionnaire.unique_instructions)
 const group = props.group
 const form = useForm({
@@ -28,7 +28,7 @@ const form = useForm({
 //initialize group store
 const groupStore = useGroupStore()
 groupStore.$reset()
-groupStore.insertAllTimeslots(group.timeslots)
+groupStore.insertAllTimeslots(props.timeslots)
 groupStore.setUpExistingUsers(group.users)
 //post data to update  group (along with timeslots and assigned users)
 function editGroup(groupId) {

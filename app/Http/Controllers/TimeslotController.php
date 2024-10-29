@@ -42,4 +42,26 @@ class TimeslotController extends Controller
             'data' => 'Something you want to pass to front-end',
         ]);
     }
+
+    public function update(Timeslot $timeslot, Request $request)
+    {
+        //authorize
+        Gate::authorize('delete', $timeslot);
+
+        $validated = $request->validate([
+            'date' => ['required'],
+            'start_time' => ['required'],
+            'end_time' => ['required', 'after:start_time']
+        ]);
+
+
+        $timeslot->date = $validated['date'];
+        $timeslot->start_time = $validated['start_time'];
+        $timeslot->end_time = $validated['end_time'];
+        $timeslot->save();
+
+        return redirect()->back()->with([
+            'timeslot' =>  $timeslot,
+        ]);
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Group;
 use App\Models\Timeslot;
 use App\Models\User;
 use App\Models\venue;
@@ -46,7 +47,9 @@ class TimeslotPolicy
      */
     public function delete(User $user, Timeslot $timeslot): bool
     {
-        $venue = venue::find($timeslot->group_id);
+        $group = Group::find($timeslot->group_id);
+        //dd($venue);
+        $venue = venue::find($group->venue_id);
         return $venue->user()->is($user);
     }
 

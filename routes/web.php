@@ -45,6 +45,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/group/{group}/edit', [GroupController::class, 'edit'])->name('group.edit');
     Route::patch('/group/{group}', [GroupController::class, 'update'])->name('group.update');
     Route::post('/timeslot/validate', [TimeslotController::class, 'validate'])->name('timeslot.validate');
+    Route::patch('/timeslot/{timeslot}', [TimeslotController::class, 'update'])->name('timeslot.update');
     Route::delete('/timeslot/{timeslot}', [TimeslotController::class, 'destroy'])->name('timeslot.delete');
     Route::post('/timeslot/{group}/store', [TimeslotController::class, 'store'])->name('timeslot.store');
     Route::get('/user/getUsers', [userController::class, 'getUsers'])->name('user.getUsers');

@@ -14,12 +14,20 @@ import Modal from '@/Components/Modal.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import DangerButton from '@/Components/DangerButton.vue';
 import TimeslotEditForm from './TimeslotEditForm.vue';
-import { watch } from 'vue';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+import { router } from '@inertiajs/vue3'
+import { nextTick } from 'vue'
 
+
+dayjs.extend(utc);
+dayjs.extend(customParseFormat);
 //initialize group store
 const group = useGroupStore()
 const confirmingTimeslotDeletion = ref(false)
 const timeslotDeleteIndex = ref('')
+const timeslotDeleteId = ref('')
 const showEditForm = ref(false)
 const timeslotEditId = ref('')
 //timeslot form
@@ -29,13 +37,25 @@ const form = useForm({
     end_time: '08:00:00 PM'
 
 });
-let timeslot = ref('')
+let timeslot = ref('') //variable to hold timeslot deatails on which edit/delete operation to be performed
 //function to validate timeslot data and to insert timeslot data to group store
 function insertTimeslot() {
     form.post(route('timeslot.validate') , {
         preserveScroll: true,
         onSuccess: () => {
-            group.insertTimeslot({id:null,date:form.date.toISOString().split('T')[0], start_time: form.start_time, end_time:form.end_time})
+            //format date start time and end time
+            let tDate  = dayjs(new Date(form.date)).format('YYYY-MM-DD')
+            let startStr = tDate + ' '+form.start_time
+            let endStr = tDate + ' '+form.end_time
+            console.log('start '+startStr + 'end '+endStr)
+            let sTime = dayjs(startStr)
+            let eTime = dayjs(endStr)
+            console.log('time obj ');
+            console.log(sTime)
+            console.log(eTime)
+            //group.insertTimeslot({id:null,date:form.date.toISOString().split('T')[0], start_time: form.start_time, end_time:form.end_time})
+            group.insertTimeslot({id:null,date:tDate, start_time: sTime, end_time:eTime})
+
         }
     })
 }
@@ -50,14 +70,16 @@ function removeTimeslot(index) {
  * if timeslot created on the fly but yet to be saved just delete it from dom
  *
  **/
-const confirmTimeslotDeletion = (index) => {
+const confirmTimeslotDeletion = (index, id) => {
     timeslot = group.getTimeslot(index)
     timeslotDeleteIndex.value = index;
     if (timeslot.id != null) {
         confirmingTimeslotDeletion.value = true;
+        //timeslotDeleteId = id
     } else {
         removeTimeslot(timeslotDeleteIndex)
     }
+    //wait nextTick()
 };
 
 const deleteTimeslot = (timeslot) => {
@@ -65,7 +87,10 @@ const deleteTimeslot = (timeslot) => {
         preserveScroll: true,
         onSuccess: () => {
             removeTimeslot(timeslotDeleteIndex)
+            router.reload({ only: ['timeslots'] })
             closeModal()
+            timeslot = {}
+            timeslotDeleteIndex
         },
     });
 };
@@ -108,7 +133,7 @@ const closeEditModal = () => {
         <div class="col-span-1">
             <div class="mt-4">
 
-                <CTimePicker label="Start Time" locale="en-US" v-model:time="form.start_time" />
+                <CTimePicker label="Start Time"  v-model:time="form.start_time" />
                 <InputError class="mt-2" :message="form.errors.start_time" />
             </div>
         </div>
@@ -116,7 +141,7 @@ const closeEditModal = () => {
             <div class="mt-4">
 
 
-                <CTimePicker label="End Time" locale="en-US" v-model:time="form.end_time" />
+                <CTimePicker label="End Time"  v-model:time="form.end_time" />
                 <InputError class="mt-2" :message="form.errors.end_time" />
             </div>
         </div>
@@ -164,13 +189,13 @@ const closeEditModal = () => {
                 <TransitionGroup>
                 <tr v-for="(item, index) in group.timeslots" :key="index" class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                     <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        {{ item['date'] }}
+                        {{ dayjs(item['date']).format('YYYY-MM-DD') }}
                     </th>
                     <td class="px-6 py-4">
-                        {{ item['start_time'] }}
+                        {{ dayjs(item['start_time']).format('HH:mm:s A') }}
                     </td>
                     <td class="px-6 py-4">
-                        {{ item['end_time'] }}
+                        {{ dayjs(item['end_time']).format('HH:mm:s A') }}
                     </td>
                     <td class="px-6 py-4">
                         -
@@ -182,7 +207,7 @@ const closeEditModal = () => {
                         <div class="flex items-center justify-start">
                         <div class="px-2">
                         <a
-                            @click="confirmTimeslotDeletion(index)"
+                            @click="confirmTimeslotDeletion(index, item['id'])"
                             as="button"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
@@ -237,6 +262,13 @@ const closeEditModal = () => {
     </div>
 </Modal>
 
-<TimeslotEditForm  :show-edit-form="showEditForm" :timeslot-edit-id="timeslotEditId" @close-edit-modal="closeEditModal"></TimeslotEditForm>
+<TimeslotEditForm
+    :show-edit-form="showEditForm"
+    :timeslot-edit-id="timeslotEditId"
+    @close-edit-modal="closeEditModal"
+    :timeslot="timeslot"
 
+    :key="timeslot.id"
+/>
+<h4>Timeslot :  {{ timeslot }} </h4>
 </template>
