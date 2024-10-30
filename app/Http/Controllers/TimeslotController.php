@@ -6,14 +6,11 @@ use App\Models\Group;
 use App\Models\Timeslot;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Inertia\Inertia;
 
 class TimeslotController extends Controller
 {
 
-    public function index()
-    {
-        dd('here');
-    }
     public function validate(Request $request)
     {
 
@@ -62,6 +59,18 @@ class TimeslotController extends Controller
 
         return redirect()->back()->with([
             'timeslot' =>  $timeslot,
+        ]);
+    }
+
+    public function index(Group $group)
+    {
+        //get all timeslots connected to group
+        //$timeslots = $group->timeslots()->get();
+        //get claim limit of group
+        //dd($group->timeslots()->get());
+        return Inertia::render('Timeslot/Index', [
+            'group'  => $group,
+            'timeslots' =>  $group->timeslots()->get(),
         ]);
     }
 }

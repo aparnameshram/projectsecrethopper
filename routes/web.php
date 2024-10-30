@@ -50,7 +50,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/timeslot/{group}/store', [TimeslotController::class, 'store'])->name('timeslot.store');
     Route::get('/user/getUsers', [userController::class, 'getUsers'])->name('user.getUsers');
 });
-
+Route::get('/timeslot/claim/{group}/{timeslot}/{user}', [TimeslotController::class, 'index'])->name('claimtimeslot')->middleware(['signed', 'auth']);
 Route::get('/examples', function () {
 
 

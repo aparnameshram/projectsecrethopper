@@ -18,8 +18,6 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import { router } from '@inertiajs/vue3'
-import { nextTick } from 'vue'
-
 
 dayjs.extend(utc);
 dayjs.extend(customParseFormat);
@@ -47,12 +45,10 @@ function insertTimeslot() {
             let tDate  = dayjs(new Date(form.date)).format('YYYY-MM-DD')
             let startStr = tDate + ' '+form.start_time
             let endStr = tDate + ' '+form.end_time
-            console.log('start '+startStr + 'end '+endStr)
+
             let sTime = dayjs(startStr)
             let eTime = dayjs(endStr)
-            console.log('time obj ');
-            console.log(sTime)
-            console.log(eTime)
+
             //group.insertTimeslot({id:null,date:form.date.toISOString().split('T')[0], start_time: form.start_time, end_time:form.end_time})
             group.insertTimeslot({id:null,date:tDate, start_time: sTime, end_time:eTime})
 
@@ -70,8 +66,13 @@ function removeTimeslot(index) {
  * if timeslot created on the fly but yet to be saved just delete it from dom
  *
  **/
-const confirmTimeslotDeletion = (index, id) => {
-    timeslot = group.getTimeslot(index)
+const confirmTimeslotDeletion = (index, timeslottodatele = null) => {
+    if (timeslottodatele != null) {
+        timeslot =  timeslottodatele
+    } else {
+        //timeslot = group.getTimeslot(index)
+        timeslot = {}
+    }
     timeslotDeleteIndex.value = index;
     if (timeslot.id != null) {
         confirmingTimeslotDeletion.value = true;
@@ -82,7 +83,7 @@ const confirmTimeslotDeletion = (index, id) => {
     //wait nextTick()
 };
 
-const deleteTimeslot = (timeslot) => {
+const deleteTimeslot = () => {
     form.delete(route('timeslot.delete',timeslot.id), {
         preserveScroll: true,
         onSuccess: () => {
@@ -207,7 +208,7 @@ const closeEditModal = () => {
                         <div class="flex items-center justify-start">
                         <div class="px-2">
                         <a
-                            @click="confirmTimeslotDeletion(index, item['id'])"
+                            @click="confirmTimeslotDeletion(index, item)"
                             as="button"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
@@ -242,6 +243,7 @@ const closeEditModal = () => {
             class="text-lg font-medium text-gray-900"
         >
             Are you sure you want to delete timeslot from this group?
+            {{  timeslot }}
         </h2>
 
 
@@ -254,7 +256,7 @@ const closeEditModal = () => {
                 class="ms-3"
                 :class="{ 'opacity-25': form.processing }"
                 :disabled="form.processing"
-                @click="deleteTimeslot(timeslot)"
+                @click="deleteTimeslot()"
             >
                 Delete
             </DangerButton>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\GroupProcessed;
 use App\Models\Group;
 use App\Models\Timeslot;
 use App\Models\User;
@@ -140,6 +141,11 @@ class GroupController extends Controller
 
         //attach users to group
         $group->users()->attach($request->collect('users'));
+
+        GroupProcessed::dispatchIf(
+            $request->notification,
+            $group
+        );
 
         return redirect(route('venue.groups', $group->venue_id, absolute: false));
     }

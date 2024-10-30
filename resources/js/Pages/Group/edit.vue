@@ -31,12 +31,13 @@ groupStore.$reset()
 groupStore.insertAllTimeslots(props.timeslots)
 groupStore.setUpExistingUsers(group.users)
 //post data to update  group (along with timeslots and assigned users)
-function editGroup(groupId) {
+function editGroup(groupId, sendNotifications = false) {
     form
     .transform((data) => ({
         ...data,
         timeslots:groupStore.timeslots,
-        users:groupStore.users
+        users:groupStore.users,
+        notification:sendNotifications
     }))
     .patch(
         route('group.update',groupId),{
@@ -178,6 +179,16 @@ function editGroup(groupId) {
                                 :disabled="form.processing"
                             >
                                 Save
+                            </PrimaryButton>
+                        </div>
+                        <div class="flex">
+                            <PrimaryButton
+                                @click.prevent="editGroup(group.id, true)"
+                                class="ms-4"
+                                :class="{ 'opacity-25': form.processing }"
+                                :disabled="form.processing"
+                            >
+                                Save + Send Notifications
                             </PrimaryButton>
                         </div>
 
