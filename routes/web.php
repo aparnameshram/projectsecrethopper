@@ -44,10 +44,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/group/{venue}', [GroupController::class, 'store'])->name('group.store');
     Route::get('/group/{group}/edit', [GroupController::class, 'edit'])->name('group.edit');
     Route::patch('/group/{group}', [GroupController::class, 'update'])->name('group.update');
+    Route::get('/timeslots/{group}', [TimeslotController::class, 'index'])->name('timeslot.index');
     Route::post('/timeslot/validate', [TimeslotController::class, 'validate'])->name('timeslot.validate');
     Route::patch('/timeslot/{timeslot}', [TimeslotController::class, 'update'])->name('timeslot.update');
     Route::delete('/timeslot/{timeslot}', [TimeslotController::class, 'destroy'])->name('timeslot.delete');
     Route::post('/timeslot/{group}/store', [TimeslotController::class, 'store'])->name('timeslot.store');
+    Route::post('/timeslot/attachUser/{timeslot}', [TimeslotController::class, 'attachUser'])->name('timeslot.attachUser');
     Route::get('/user/getUsers', [userController::class, 'getUsers'])->name('user.getUsers');
 });
 Route::get('/timeslot/claim/{group}/{timeslot}/{user}', [TimeslotController::class, 'index'])->name('claimtimeslot')->middleware(['signed', 'auth']);

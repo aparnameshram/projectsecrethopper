@@ -5,13 +5,13 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import useForm from '@inertiajs/vue3';
+import { useForm } from '@inertiajs/vue3';
 dayjs.extend(utc);
 dayjs.extend(customParseFormat);
-const props = defineProps(['group','timeslots'])
+const props = defineProps(['group','timeslots','totalClaimes','canClaim'])
 //timeslot form
 const form = useForm({
-    canClaim: true
+    canClaim: props.canClaim
 });
 </script>
 <template>
@@ -65,9 +65,10 @@ const form = useForm({
 
                                 <div class="px-2">
                                     <PrimaryButton
-
+                                    @click.prevent="form.post(route('timeslot.attachUser',item.id),{onSuccess:form.canClaim=false})"
                                     class="ms-4"
-
+                                    :class="{ 'opacity-25': !form.canClaim }"
+                                    :disabled="!form.canClaim"
                                 >
                                     Claim
                                 </PrimaryButton>

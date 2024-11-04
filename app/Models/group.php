@@ -29,4 +29,12 @@ class Group extends Model
     {
         return $this->hasMany(Timeslot::class);
     }
+
+    /**
+     * Function to return users who claimed timeslots
+     */
+    public function claimedTimeslotUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class)->wherePivotNotNull('claimed_timeslot_id');
+    }
 }
