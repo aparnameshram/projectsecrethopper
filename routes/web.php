@@ -50,7 +50,14 @@ Route::middleware('auth')->group(function () {
     Route::delete('/timeslot/{timeslot}', [TimeslotController::class, 'destroy'])->name('timeslot.delete');
     Route::post('/timeslot/{group}/store', [TimeslotController::class, 'store'])->name('timeslot.store');
     Route::post('/timeslot/attachUser/{timeslot}', [TimeslotController::class, 'attachUser'])->name('timeslot.attachUser');
+    Route::get('/users', [userController::class, 'index'])->name('users');
     Route::get('/user/getUsers', [userController::class, 'getUsers'])->name('user.getUsers');
+    Route::get('/user/{user}', [userController::class, 'show'])->name('user.show');
+    Route::get('/user/create', [userController::class, 'create'])->name('user.create');
+    Route::post('/user/create', [userController::class, 'store'])->name('user.save');
+    Route::get('/user/{user}/edit', [userController::class, 'edit'])->name('user.edit');
+    Route::patch('/user/{user}', [userController::class, 'update'])->name('user.update');
+    Route::delete('/user/{user}', [userController::class, 'destroy'])->name('user.delete');
 });
 Route::get('/timeslot/claim/{group}/{timeslot}/{user}', [TimeslotController::class, 'index'])->name('claimtimeslot')->middleware(['signed', 'auth']);
 Route::get('/examples', function () {

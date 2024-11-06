@@ -1,6 +1,6 @@
 
 <script setup>
-import { data } from 'autoprefixer';
+
 import { onMounted, ref } from 'vue';
 
 const model = defineModel({
