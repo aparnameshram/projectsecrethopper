@@ -7,8 +7,8 @@
     import SecondaryButton from '@/Components/SecondaryButton.vue';
     import DangerButton from '@/Components/DangerButton.vue';
     import DeleteLink from '@/Components/DeleteLink.vue'
-import EditLink from '@/Components/EditLink.vue';
-import ViewLink from '@/Components/ViewLink.vue';
+    import EditLink from '@/Components/EditLink.vue';
+    import ViewLink from '@/Components/ViewLink.vue';
 
     const props = defineProps(['users'])
     const model =  useModal()
@@ -27,14 +27,13 @@ import ViewLink from '@/Components/ViewLink.vue';
     const form = useForm({})
 
     const deleteUser = (user) => {
-        alert(user)
-    form.delete(route('user.delete', user.id),{
-        onSuccess:() => {
-            emit('close')
-            form.reset()
-        }
-    })
-}
+        form.delete(route('user.delete', user.id),{
+            onSuccess:() => {
+                deleteModel.hideModal()
+                form.reset()
+            }
+        })
+    }
 </script>
 <template>
     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">

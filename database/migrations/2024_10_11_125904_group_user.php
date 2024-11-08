@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('group_user', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Group::class);
-            $table->foreignIdFor(User::class);
+            $table->foreignIdFor(Group::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
             $table->integer('claimed_timeslot_id')->nullable();
             $table->timestamps();
         });

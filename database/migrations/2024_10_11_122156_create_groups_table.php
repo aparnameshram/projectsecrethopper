@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('groups', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(venue::class);
+            $table->foreignIdFor(venue::class)->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->integer('claim_limit');
             $table->float('radius');

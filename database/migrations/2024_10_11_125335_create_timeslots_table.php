@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('timeslots', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Group::class);
+            $table->foreignIdFor(Group::class)->constrained()->cascadeOnDelete();
             $table->date('date');
             $table->dateTime('start_time');
             $table->dateTime('end_time');

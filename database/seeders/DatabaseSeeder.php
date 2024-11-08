@@ -74,7 +74,7 @@ class DatabaseSeeder extends Seeder
             ->create();*/
         User::factory(3)
             ->state(new Sequence(
-                fn(Sequence $sequence) => ['role_id' => Role::all()->random()],
+                fn(Sequence $sequence) => ['role_id' => 3],
             ))
             ->has(UserProfile::factory()->count(1), 'userProfile')
             ->has(
@@ -84,7 +84,7 @@ class DatabaseSeeder extends Seeder
                             Timeslot::factory()->count(2)
                         )
                         ->hasAttached(
-                            User::factory()
+                            User::factory(['role_id' => 3])
                                 ->has(UserProfile::factory()->count(1), 'userProfile')
                                 ->count(3)
                         )
