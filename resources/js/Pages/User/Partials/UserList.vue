@@ -11,6 +11,7 @@
     import ViewLink from '@/Components/ViewLink.vue';
 
     const props = defineProps(['users'])
+    //edit user
     const model =  useModal()
 
     const openEdit = (user) => {
@@ -18,6 +19,7 @@
         model.showModal();
     }
 
+    //delete user
     const deleteModel = useModal()
     const openDelete = (user) => {
         deleteModel.user = user

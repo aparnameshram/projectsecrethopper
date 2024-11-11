@@ -16,9 +16,7 @@ class VenueController extends Controller
 
         $limit = $request->query('limit') ? $request->query('limit') : Config::get('app.pagination.limit');
         if ($request->query('search') != null) {
-            $venues = venue::where([
-                'user_id' => $user,
-            ])->whereAny(
+            $venues = venue::whereAny(
                 [
                     'name',
                     'address'
@@ -27,7 +25,7 @@ class VenueController extends Controller
                 '%' . $request->query('search') . '%'
             )->paginate($limit);
         } else {
-            $venues = venue::where('user_id', $user)->paginate($limit);
+            $venues = venue::paginate($limit);
         }
 
 

@@ -72,24 +72,24 @@ class DatabaseSeeder extends Seeder
                     ->count(2)
             )
             ->create();*/
+        $venue = Venue::factory()->create(['user_id' => 1]);
         User::factory(3)
             ->state(new Sequence(
                 fn(Sequence $sequence) => ['role_id' => 3],
             ))
             ->has(UserProfile::factory()->count(1), 'userProfile')
             ->has(
-                venue::factory()
-                    ->has(group::factory()
-                        ->has(
-                            Timeslot::factory()->count(2)
-                        )
-                        ->hasAttached(
-                            User::factory(['role_id' => 3])
-                                ->has(UserProfile::factory()->count(1), 'userProfile')
-                                ->count(3)
-                        )
-                        ->count(2))
+                group::factory()
+                    ->has(
+                        Timeslot::factory()->count(2)
+                    )
+                    ->hasAttached(
+                        User::factory()
+                            ->has(UserProfile::factory()->count(1), 'userProfile')
+                            ->count(3)
+                    )
                     ->count(2)
+                    ->for($venue)
             )
             ->create();
     }

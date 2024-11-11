@@ -41,13 +41,13 @@ const showingNavigationDropdown = ref(false);
                                 </NavLink>
                                 <NavLink
                                     :href="route('venues')"
-                                    :active="route().current('venues')"
+                                    :active="route().current('venues') || route().current('venue')"
                                 >
                                    Secret Hops
                                 </NavLink>
                                 <NavLink
-                                    :href="route('dashboard')"
-                                    :active="route().current('dashboard')"
+                                    :href="route('users')"
+                                    :active="route().current('user') || route().current('users')"
                                 >
                                     Shoppers
                                 </NavLink>

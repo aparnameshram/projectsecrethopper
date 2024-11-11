@@ -32,12 +32,21 @@ const form = useForm({
 })
 
 const submit = () => {
-    form.patch(route('user.update', props.user.id),{
-        onSuccess:() => {
-            emit('close')
-            form.reset()
-        }
-    })
+    if (props.user.id !== null)  {
+        form.patch(route('user.update', props.user.id),{
+            onSuccess:() => {
+                emit('close')
+                form.reset()
+            }
+        })
+    } else {
+        form.post(route('user.save'),{
+            onSuccess:() => {
+                emit('close')
+                form.reset()
+            }
+        })
+    }
 }
 </script>
 

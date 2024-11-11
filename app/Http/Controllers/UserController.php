@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 
 class userController extends Controller
@@ -123,5 +124,53 @@ class userController extends Controller
             return redirect(route('users'));
         }
         return redirect()->back();
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'phone' => ['required'],
+            'user_profile.gender' => ['required'],
+            'user_profile.address' => ['required', 'string', 'min:3'],
+            'user_profile.timezone' => ['required', 'timezone:all'],
+            'user_profile.date_signed' => ['required', 'date'],
+        ]);
+
+        $user = User::create([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'password' =>  Hash::make(Config::get('newUserPassword')),
+            'phone' => $request->phone,
+            'role_id' => USER::DEFAULT_ROLE_ID
+        ]);
+
+        //setting lat long manually for now, later we will get them by google api
+        $defaults = [
+            'latitude' => '19.614960',
+            'longitude' => '74.618560',
+            'city' => '',
+            'state' => '',
+            'zip' => '',
+            'country' => '',
+            'drinker_type' => 'new',
+            'how_did_hear' => '',
+            'recent_experience' => '',
+            'qualification_for_hopper' => '',
+            'acknowledge_text' => '',
+            'acknowledge_name' => '',
+            'practice_report' => 0,
+            'date_of_birth' => ''
+        ];
+
+        $userProfile = array_merge($request->collect()->get('user_profile'), $defaults);
+        $user->userProfile()->create($userProfile);
+
+        return redirect()->back()->with([
+            'user' => $user
+        ]);
     }
 }

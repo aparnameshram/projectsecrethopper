@@ -5,9 +5,12 @@ import { router } from '@inertiajs/vue3'
 import { ref } from 'vue';
 import { watch } from 'vue';
 import { useModal } from '@/Components/Modal';
-
+import EditForm from './Partials/EditForm.vue';
+import { userModal } from './Composables/User.js';
+import Modal from '@/Components/Modal.vue';
 import SearchFilter from './Partials/SearchFilter.vue';
 import UserList from './Partials/UserList.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 const props = defineProps(['users','limit','selectOptions'])
 
@@ -27,12 +30,21 @@ const getUsers = async(newX) => {
 
         })
     } catch (error) {
-        console.log('Error! Could not reach the API. ' + error);
+        //console.log('Error! Could not reach the API. ' + error);
 
     } finally {
-        console.log('in finally')
+        //console.log('in finally')
     }
 
+}
+
+ //create user
+const createModel =  useModal()
+const userObj = userModal()
+const openCreate = () => {
+    userObj.createEmptyUser()
+    createModel.user = userObj.user
+    createModel.showModal();
 }
 
 watch(name, getUsers)
@@ -57,6 +69,11 @@ watch(limit,getUsers)
                     <div>
                         <h2 class="font-semibold text-lg mb-5">Shoppers</h2>
                     </div>
+                    <div>
+                        <PrimaryButton @click.prevent="openCreate">
+                            Add Shopper
+                        </PrimaryButton>
+                    </div>
                 </div>
                 <!-- search bar  start -->
                  <SearchFilter
@@ -73,5 +90,15 @@ watch(limit,getUsers)
         </div>
     </AuthenticatedLayout>
 
+ <!-- create user-->
+ <Modal :show="createModel.show.value" @close="createModel.hideModal" >
+    <div class="py-12">
+        <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8 flex flex-col">
+            <!-- include user edit  form component -->
+            <EditForm :user="createModel.user.value"  @close="createModel.hideModal"></EditForm>
+            <!-- end form-->
+        </div>
+    </div>
+</Modal>
 
 </template>

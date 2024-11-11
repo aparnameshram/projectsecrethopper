@@ -159,4 +159,5 @@ return [
         'link' => 'https://www.secrethopper.com/secret-hopper-experience-report',
         'unique_instructions' => 'You will be ordering a flight of beer followed by a pint. The payment for this visit is a flat $20 sent via PayPal following proper completion of a questionnaire about your experience. This is not a reimbursement but a flat payment of $20.'
     ],
+    'newUserPassword' => 'password'
 ];
