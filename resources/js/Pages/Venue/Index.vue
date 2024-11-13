@@ -2,37 +2,27 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import VenueList from './Partials/VenueList.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import TextInput from '@/Components/TextInput.vue';
-import SearchInput from './Partials/SearchInput.vue';
 import { router } from '@inertiajs/vue3'
 import { ref } from 'vue';
 import { watch } from 'vue';
+import VenueForm from './Partials/VenueForm.vue';
+import { useModal } from '@/Components/Modal';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import Modal from '@/Components/Modal.vue';
+import SearchInput from './Partials/SearchInput.vue';
 
-import AddVenueForm from './Partials/AddVenueForm.vue';
-import EditVenueForm from './Partials/EditVenueForm.vue';
-import { useTemplateRef, onMounted } from 'vue'
-import { venueStore } from './venueStore.js';
-ref('venues');
+const props = defineProps(['venues','limit','selectOptions']);
 
-defineProps(['venues','limit','selectOptions']);
-/*defineEmits({
-    openEditVenueForm : (e) => {
-        alert(e)
-    }
-})*/
-const question = ref('')
 const loading = ref(false)
-const pageLimit = ref('');
-
+const name = ref('')
+const limit = ref(props.limit);
 const getVenues = async(newX) => {
     try {
         router.visit(route('venues'), {
             method:'get',
             data:{
-                search : question.value,
-                limit : pageLimit.value
+                search : name.value,
+                limit : limit.value
             },
             only: ['venues'],
             preserveState: true,
@@ -46,20 +36,19 @@ const getVenues = async(newX) => {
     }
 }
 
-/*const openEditVenueModal = () => {
-    alert('here')
-}*/
-
-watch(question, getVenues)
-watch(pageLimit,getVenues)
-
-
+//create venue
+const createModel =  useModal()
+const openCreate = () => {
+    createModel.venue = new Object()
+    createModel.showModal();
+}
+watch(name, getVenues)
+watch(limit,getVenues)
 
 </script>
 
 <template>
     <Head title="Secret Hops" />
-
     <AuthenticatedLayout>
         <template #header>
             <h2
@@ -68,7 +57,6 @@ watch(pageLimit,getVenues)
                 Secret Hops
             </h2>
         </template>
-
         <div class="py-12">
             <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8 flex flex-col">
                 <div class="flex justify-between">
@@ -77,47 +65,28 @@ watch(pageLimit,getVenues)
                         <p>A list of all the Secret hops in your account including their name and address.</p>
                     </div>
                     <div>
-                        <AddVenueForm :select-options="selectOptions"></AddVenueForm>
-
+                        <PrimaryButton @click.prevent="openCreate">
+                            Add Venue
+                        </PrimaryButton>
                     </div>
                 </div>
-                <div class="flex justify-between">
-                    <div>
-                        <InputLabel for="searchText" value="A list of all the Secret hops in your account including their name and address." />
 
-                        <TextInput
-                            id="searchText"
-                            type="text"
-                            class="mt-1 block w-full"
-                            autocomplete="name"
-                            v-model="question"
-                        />
-                    </div>
-                    <div>
-                        <select
-                        id="limit"
-                        v-model="pageLimit"
-                        class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                        :value="limit"
-                        >
-                            <option>10</option>
-                            <option>25</option>
-                            <option>50</option>
-                        </select>
-                    </div>
-                </div>
+                <SearchInput v-model:name="name" v-model:limit="limit" />
                 <div  class="bg-white p-4 shadow sm:rounded-lg sm:p-8"  >
-
-                    <VenueList :venues="venues" ref="venueList"/>
-
+                    <VenueList :venues="props.venues" ref="venueList"/>
                 </div>
-
             </div>
         </div>
-
-        <div>
-
-
-        </div>
     </AuthenticatedLayout>
+
+    <!-- create user-->
+ <Modal :show="createModel.show.value" @close="createModel.hideModal" >
+    <div class="py-12">
+        <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8 flex flex-col">
+            <!-- include user edit  form component -->
+            <VenueForm :venue="createModel.venue.value"  @close="createModel.hideModal"></VenueForm>
+            <!-- end form-->
+        </div>
+    </div>
+</Modal>
 </template>

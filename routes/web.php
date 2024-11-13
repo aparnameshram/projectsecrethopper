@@ -36,8 +36,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/venue/create', [VenueController::class, 'create'])->name('venue.create');
     Route::post('/venue/create', [VenueController::class, 'store'])->name('venue.save');
     Route::get('/venue/{venue}/edit', [VenueController::class, 'edit'])->name('venue.edit');
-    Route::patch('/venue', [VenueController::class, 'update'])->name('venue.update');
-    Route::delete('/venue', [VenueController::class, 'destroy'])->name('venue.delete');
+    Route::patch('/venue/{venue}', [VenueController::class, 'update'])->name('venue.update');
+    Route::delete('/venue/{venue}', [VenueController::class, 'destroy'])->name('venue.delete');
     Route::get('/get_venues', [VenueController::class, 'index'])->name('get_venues');
     Route::get('/groups/{venue}', [GroupController::class, 'index'])->name('venue.groups');
     Route::get('/group/{venue}/create', [GroupController::class, 'create'])->name('group.create');

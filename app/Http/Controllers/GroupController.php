@@ -99,11 +99,11 @@ class GroupController extends Controller
             $users = User::with('userProfile')->paginate($limit);
         }
 
-        $groupData =  Group::with(['timeslots.attachecdUsers', 'users.userProfile'])->find($group->id);
+        //$groupData =  Group::with(['timeslots.attachecdUsers', 'users.userProfile'])->find($group->id);
 
         //render
         return Inertia::render('Group/edit', [
-            'group'  => $groupData,
+            'group'  => Group::with(['timeslots.attachecdUsers', 'users.userProfile'])->find($group->id),
             'timeslots' =>  Timeslot::with(['attachecdUsers'])->where('group_id', '=', $group->id)->get(),
             'shoppers'  => fn() => User::with(['Group', 'userProfile'])->where('group_id', '=', $group->id)->latest(),
             'questionnaire' => Config::get('app.questionnaire'),

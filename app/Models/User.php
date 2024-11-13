@@ -43,6 +43,8 @@ class User extends Authenticatable
     ];
 
     public const DEFAULT_ROLE_ID = 3;
+
+    protected $appends = ['isAdmin'];
     /**
      * Get the attributes that should be cast.
      *
@@ -84,5 +86,10 @@ class User extends Authenticatable
     public function isAdministrator()
     {
         return ($this->role->name == 'admin');
+    }
+
+    public function getIsAdminAttribute()
+    {
+        return $this->isAdministrator();
     }
 }

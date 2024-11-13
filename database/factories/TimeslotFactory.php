@@ -19,8 +19,8 @@ class TimeslotFactory extends Factory
 
         return [
             'date' => fake()->date(),
-            'start_time' => fake()->dateTime(),
-            'end_time' => fake()->dateTime(),
+            'start_time' => fake()->time(),
+            'end_time' => fake()->time(),
         ];
     }
 }

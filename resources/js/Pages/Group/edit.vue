@@ -20,10 +20,10 @@ const group = props.group
 const form = useForm({
     processing:false,
     name: props.group.name,
-    claim_limit:props.group.claim_limit,
-    radius: props.group.radius,
+    claim_limit:props.group.claim_limit.toString(),
+    radius: props.group.radius.toString(),
     unique_instructions: props.group.unique_instructions,
-    show_in_search:props.group.show_in_search,
+    show_in_search:Boolean(props.group.show_in_search),
 })
 //initialize group store
 const groupStore = useGroupStore()

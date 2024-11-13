@@ -51,13 +51,13 @@ const form = useForm({
                         <TransitionGroup>
                         <tr v-for="(item, index) in props.timeslots" :key="item.id" class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                {{ dayjs(item.date).format('YYYY-MM-DD') }}
+                                {{ item.date }}
                             </th>
                             <td class="px-6 py-4">
-                                {{ dayjs(item.start_time).format('HH:mm:s A') }}
+                                {{ item.start_time }}
                             </td>
                             <td class="px-6 py-4">
-                                {{ dayjs(item.end_time).format('HH:mm:s A') }}
+                                {{ item.end_time }}
                             </td>
 
                             <td class="px-6 py-4">

@@ -4,7 +4,7 @@ namespace App\Policies;
 
 use App\Models\User;
 use App\Models\Venue;
-use Illuminate\Auth\Access\Response;
+
 
 class VenuePolicy
 {
@@ -21,7 +21,7 @@ class VenuePolicy
      */
     public function view(User $user, Venue $venue): bool
     {
-        return $venue->user()->is($user);
+        return $user->isAdministrator();
     }
 
     /**
@@ -29,7 +29,7 @@ class VenuePolicy
      */
     public function create(User $user): bool
     {
-        return true;
+        return $user->isAdministrator();
     }
 
     /**
@@ -37,7 +37,7 @@ class VenuePolicy
      */
     public function update(User $user, Venue $venue): bool
     {
-        return true;
+        return $user->isAdministrator();
     }
 
     /**
@@ -45,7 +45,7 @@ class VenuePolicy
      */
     public function delete(User $user, Venue $venue): bool
     {
-        return true;
+        return $user->isAdministrator();
     }
 
     /**
@@ -53,7 +53,7 @@ class VenuePolicy
      */
     public function restore(User $user, Venue $venue): bool
     {
-        return true;
+        return $user->isAdministrator();
     }
 
     /**
@@ -61,6 +61,6 @@ class VenuePolicy
      */
     public function forceDelete(User $user, Venue $venue): bool
     {
-        return true;
+        return $user->isAdministrator();
     }
 }

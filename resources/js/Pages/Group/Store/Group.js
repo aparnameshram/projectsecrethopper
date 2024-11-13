@@ -1,5 +1,10 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+dayjs.extend(utc);
+dayjs.extend(customParseFormat);
 
 export const useGroupStore = defineStore('group', {
     state: () => ({
@@ -23,6 +28,9 @@ export const useGroupStore = defineStore('group', {
         },
         getTimeslot(index) {
             return this.timeslots[index]
+        },
+        updateTimeslot(timeslot, index) {
+            this.timeslots[index] = timeslot
         },
         insertUser(user) {
             this.users.push(user)

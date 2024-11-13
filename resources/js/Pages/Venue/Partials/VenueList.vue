@@ -1,45 +1,46 @@
 <script setup>
-
-import { Head, router } from '@inertiajs/vue3';
-import ActionLinks from './ActionLinks.vue';
 import DefaultPagination from '@/Components/DefaultPagination.vue';
-import { useTemplateRef, onMounted, watch } from 'vue'
-import EditVenueForm from './EditVenueForm.vue';
-import { ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
+import ViewLink from '@/Components/ViewLink.vue';
+import EditLink from '@/Components/EditLink.vue';
+import DeleteLink from '@/Components/DeleteLink.vue';
+import { useModal } from '@/Components/Modal.js';
+import Modal from '@/Components/Modal.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import DangerButton from '@/Components/DangerButton.vue';
+import VenueForm from './VenueForm.vue';
+import { useForm } from '@inertiajs/vue3';
+
 defineProps(['venues'])
-const editVenueForm = useTemplateRef('editVenueForm')
-const editForm = ref('')
-const openModel = () => {
-    alert('here in open model from watch callback')
-    alert(editForm)
-    editVenueForm.openModel()
-    //console.log(editVenueForm.statval.value)
-    //console.log(this.$refs.editVenueForm)
 
-}
-const openEditVenueModal = (venue) => {
-    alert('here in open edit venue modal')
-    console.log(venue)
-    //openModel()
-    editForm.value = venue
-    //console.log(editVenueForm.stat.value)
+//edit user
+const model =  useModal()
 
+const openEdit = (venue) => {
+    model.venue=venue
+    model.showModal();
 }
 
-const showGroups = (venue) => {
-   /*router.visit(
-    route('group.show',venue.id),{
-        method: 'get',
-        replace: true
-    }
-    )*/
-   alert('here')
+//delete user
+const deleteModel = useModal()
+const openDelete = (venue) => {
+    deleteModel.venue = venue
+    deleteModel.showModal()
 }
-watch(editForm, openModel)
+
+const form = useForm({})
+
+const deleteVenue = (venue) => {
+    form.delete(route('venue.delete', venue.id),{
+        onSuccess:() => {
+            deleteModel.hideModal()
+            form.reset()
+        }
+    })
+}
+
 </script>
 <template>
-<EditVenueForm ref="editVenueForm"></EditVenueForm>
 <table class="table-fixed border-spacing-2 mt-5 w-full place-content-start mb-5">
     <thead>
       <tr class="font-bold text-md shadow-sm p-6 bg-slate-50/80 rounded-lg">
@@ -59,11 +60,56 @@ watch(editForm, openModel)
         <td class="pl-5 py-3"><Link :href="route('venue.groups',venue.id)">{{venue.address}}</Link></td>
         <td class="pl-5 py-3"><Link :href="route('venue.groups',venue.id)">{{venue.status}}</Link></td>
         <td class="pl-5 py-3">
-            <ActionLinks :venue="venue" ref="actionLink" @open-edit-venue-form="openEditVenueModal"></ActionLinks>
+            <!--<ActionLinks :venue="venue" ref="actionLink" @open-edit-venue-form="openEditVenueModal"></ActionLinks>-->
+            <div class="flex items-center justify-start">
+            <div class="px-2">
+                <ViewLink :href="route('venue.groups',venue.id)" />
+            </div>
+            <div class="px-2">
+                <EditLink  v-show="$page.props.auth.user.isAdmin" @click="openEdit(venue)" />
+            </div>
+            <div class="px-2">
+                <DeleteLink  v-show="$page.props.auth.user.isAdmin" @click="openDelete(venue)" />
+            </div>
+            </div>
         </td>
     </tr>
     </tbody>
     </table>
     <DefaultPagination :pagination="venues" />
+     <!-- Edit venue-->
+     <Modal :show="model.show.value" @close="model.hideModal" >
+        <div class="py-12">
+            <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8 flex flex-col">
+                <!-- include venue edit  form component -->
+                <VenueForm :venue="model.venue"  @close="model.hideModal"></VenueForm>
+                <!-- end form-->
+            </div>
+        </div>
+    </Modal>
 
+    <!-- Delete user -->
+    <Modal :show="deleteModel.show.value" @close="deleteModel.hideModal" >
+        <div class="p-6">
+            <h2
+                class="text-lg font-medium text-gray-900"
+            >
+                Are you sure you want to delete venue {{ deleteModel.venue.name  }}?
+
+            </h2>
+            <div class="mt-6 flex justify-end">
+                <SecondaryButton @click="deleteModel.hideModal">
+                    Cancel
+                </SecondaryButton>
+                <DangerButton
+                    class="ms-3"
+                    :class="{ 'opacity-25': form.processing }"
+                    :disabled="form.processing"
+                    @click="deleteVenue(deleteModel.venue)"
+                >
+                    Delete
+                </DangerButton>
+            </div>
+        </div>
+    </Modal>
 </template>

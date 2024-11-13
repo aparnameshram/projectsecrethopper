@@ -57,9 +57,7 @@ class TimeslotController extends Controller
         $timeslot->end_time = $validated['end_time'];
         $timeslot->save();
 
-        return redirect()->back()->with([
-            'timeslot' =>  $timeslot,
-        ]);
+        return redirect()->back();
     }
 
     /**
