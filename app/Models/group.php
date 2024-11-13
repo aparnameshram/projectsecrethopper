@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -36,5 +37,28 @@ class Group extends Model
     public function claimedTimeslotUsers(): BelongsToMany
     {
         return $this->belongsToMany(User::class)->wherePivotNotNull('claimed_timeslot_id');
+    }
+
+    public function getCanClaimTimeslotAttribute()
+    {
+        $totalClaimes = $this->claimedTimeslotUsers()->get()->count();
+
+        //check if user already claimed any of timeslot
+        $alreadyClaimed = $this->users()
+            ->wherePivot('user_id', '=', Request()->user()->id)
+            ->wherePivotNull('claimed_timeslot_id')
+            ->get()->count();
+
+        return (($totalClaimes <= $this->claim_limit) && $alreadyClaimed);
+    }
+
+    protected function getVenueNameAttribute()
+    {
+        return $this->venue()->first()->name;
+    }
+
+    protected function getVenueAddressAttribute()
+    {
+        return $this->venue()->first()->address;
     }
 }

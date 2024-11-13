@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Group;
 use App\Models\Timeslot;
+use App\Models\User;
+use App\Models\venue;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
+use Illuminate\Database\Query\JoinClause;
 
 class TimeslotController extends Controller
 {
@@ -61,9 +65,9 @@ class TimeslotController extends Controller
     }
 
     /**
-     * Function to list timeslots
+     * Function to list timeslots of group
      */
-    public function index(Group $group)
+    public function show(Group $group)
     {
         return Inertia::render('Timeslot/Index', [
             'group'  => $group,
@@ -105,5 +109,34 @@ class TimeslotController extends Controller
             ->get()->count();
 
         return (($totalClaimes <= $group->claim_limit) && $alreadyClaimed);
+    }
+
+    /**
+     * Function to list timeslots of user
+     */
+    public function index(User $user)
+    {
+        $user = User::find(Request()->user()->id);
+        $groups = $user->groups()
+            ->with('timeslots')
+            ->get();
+
+        $groups = $groups->append(['canClaimTimeslot'])->groupBy('venue_id')->toArray();
+        $venueIds = array_keys($groups);
+
+        $venues = venue::whereIn('id', $venueIds)->select('id', 'address', 'name')->get();
+        $data = [];
+        foreach ($venues as $venue) {
+            $data[] = [
+                'venue_id' => $venue->id,
+                'address' => $venue->address,
+                'name'  => $venue->name,
+                'groups' => (isset($groups[$venue->id]) ? $groups[$venue->id] : [])
+            ];
+        }
+
+        return Inertia::render('Timeslot/Index', [
+            'data'  => $data,
+        ]);
     }
 }

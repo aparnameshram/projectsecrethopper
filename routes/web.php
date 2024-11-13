@@ -44,7 +44,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/group/{venue}', [GroupController::class, 'store'])->name('group.store');
     Route::get('/group/{group}/edit', [GroupController::class, 'edit'])->name('group.edit');
     Route::patch('/group/{group}', [GroupController::class, 'update'])->name('group.update');
-    Route::get('/timeslots/{group}', [TimeslotController::class, 'index'])->name('timeslot.index');
+    Route::get('/timeslots/{group}', [TimeslotController::class, 'show'])->name('timeslot.show');
     Route::post('/timeslot/validate', [TimeslotController::class, 'validate'])->name('timeslot.validate');
     Route::patch('/timeslot/{timeslot}', [TimeslotController::class, 'update'])->name('timeslot.update');
     Route::delete('/timeslot/{timeslot}', [TimeslotController::class, 'destroy'])->name('timeslot.delete');
@@ -58,6 +58,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/user/{user}/edit', [userController::class, 'edit'])->name('user.edit');
     Route::patch('/user/{user}', [userController::class, 'update'])->name('user.update');
     Route::delete('/user/{user}', [userController::class, 'destroy'])->name('user.delete');
+    Route::get('/secret-hops', [TimeslotController::class, 'index'])->name('secrethops');
 });
 Route::get('/timeslot/claim/{group}/{timeslot}/{user}', [TimeslotController::class, 'index'])->name('claimtimeslot')->middleware(['signed', 'auth']);
 Route::get('/examples', function () {

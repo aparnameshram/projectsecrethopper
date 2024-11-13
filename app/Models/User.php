@@ -70,7 +70,7 @@ class User extends Authenticatable
 
     public function groups(): BelongsToMany
     {
-        return $this->belongsToMany(Group::class); //->withPivot('claimed_timeslot_id');
+        return $this->belongsToMany(Group::class)->withPivot('claimed_timeslot_id');
     }
 
     public function attachedTimeslots(): BelongsToMany
