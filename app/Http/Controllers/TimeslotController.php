@@ -83,19 +83,26 @@ class TimeslotController extends Controller
     public function attachUser(Timeslot $timeslot, Request $request)
     {
 
-        $request->user()->groups()->updateExistingPivot($timeslot->group_id, ['claimed_timeslot_id' => $timeslot->id]);
+        $request->user()
+            ->groups()
+            ->updateExistingPivot(
+                $timeslot->group_id,
+                ['claimed_timeslot_id' => $timeslot->id]
+            );
 
-        //return redirect(route('secrethops'));
-        //return redirect()->back();
         return to_route('secrethops');
     }
 
     public function detachUser(Timeslot $timeslot, Request $request)
     {
-        //$group = Group::find($timeslot->group_id);
-        //updateExistingPivot
-        $request->user()->groups()->updateExistingPivot($timeslot->group_id, ['claimed_timeslot_id' => null]);
-        //return redirect(route('secrethops'));
+
+        $request->user()
+            ->groups()
+            ->updateExistingPivot(
+                $timeslot->group_id,
+                ['claimed_timeslot_id' => null]
+            );
+
         return to_route('secrethops');
     }
 
