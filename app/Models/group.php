@@ -61,4 +61,9 @@ class Group extends Model
     {
         return $this->venue()->first()->address;
     }
+
+    protected function getClaimedTimeslotAttribute()
+    {
+        return $this->pivot->claimed_timeslot_id;
+    }
 }

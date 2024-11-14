@@ -50,6 +50,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/timeslot/{timeslot}', [TimeslotController::class, 'destroy'])->name('timeslot.delete');
     Route::post('/timeslot/{group}/store', [TimeslotController::class, 'store'])->name('timeslot.store');
     Route::post('/timeslot/attachUser/{timeslot}', [TimeslotController::class, 'attachUser'])->name('timeslot.attachUser');
+    Route::post('/timeslot/detachUser/{timeslot}', [TimeslotController::class, 'detachUser'])->name('timeslot.detachUser');
     Route::get('/users', [userController::class, 'index'])->name('users');
     Route::get('/user/getUsers', [userController::class, 'getUsers'])->name('user.getUsers');
     Route::get('/user/{user}', [userController::class, 'show'])->name('user.show');

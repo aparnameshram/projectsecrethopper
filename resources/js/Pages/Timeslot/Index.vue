@@ -7,14 +7,37 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import { router } from '@inertiajs/vue3';
 dayjs.extend(utc);
 dayjs.extend(customParseFormat);
 const props = defineProps(['data'])
-//timeslot form
-/*const form = useForm({
-    canClaim: props.canClaim
-});*/
 
+const form = useForm({});
+
+ref(props)
+
+const processClaim = function (group, timeslot) {
+    const disable = (!group.canClaimTimeslot && group.claimedTimeslot != timeslot.id)
+    const unclaim = (group.claimedTimeslot == timeslot.id)
+    if (!disable) {
+        const url = (unclaim) ? 'timeslot.detachUser' : 'timeslot.attachUser'
+        form.post(route(url, timeslot.id),{
+                onFinish:() => {
+                    router.reload()
+                }
+        })
+    }
+}
+
+function calculateDisable(group, timeslot) {
+    const disable = (!group.canClaimTimeslot && group.claimedTimeslot != timeslot.id)
+    return disable
+}
+
+function calculateUnclaim(group, timeslot){
+    const unclaim = (group.claimedTimeslot == timeslot.id)
+    return unclaim
+}
 </script>
 <template>
     <Head title="Secret Hops" />
@@ -63,7 +86,6 @@ const props = defineProps(['data'])
                                             <th></th>
                                             <th></th>
                                         </tr>
-
                                     </thead>
                                     <tr v-for="timeslot in group.timeslots" class="bg-white border-y-1">
                                         <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
@@ -75,33 +97,28 @@ const props = defineProps(['data'])
                                         <td class="px-6 py-4">
                                             {{ timeslot.end_time }}
                                         </td>
-
                                         <td class="px-6 py-4">
                                             <div class="flex items-center justify-start">
-
-                                            <div class="px-2">
-                                                <PrimaryButton
-
-                                                :class="{ 'opacity-25': !group.canClaimTimeslot }"
-                                                :disabled="!group.canClaimTimeslot"
-                                            >
-                                                Claim
-                                            </PrimaryButton>
+                                                <div>
+                                                    <PrimaryButton
+                                                        :class="{'opacity-25':calculateDisable(group,timeslot),'bg-red-700' : calculateUnclaim(group, timeslot)}"
+                                                        :disabled="calculateDisable(group,timeslot)"
+                                                        @click.prevent="processClaim(group, timeslot)"
+                                                        >
+                                                    {{ calculateUnclaim(group, timeslot) ? 'unlaim' : 'claim' }}
+                                                    </PrimaryButton>
+                                                </div>
                                             </div>
-                                        </div>
                                         </td>
-
                                     </tr>
                                 </table>
                             </td>
                         </Transition>
                         </tr>
-
                     </tbody>
                 </table>
                 </form>
             </div>
         </div>
     </AuthenticatedLayout>
-
 </template>

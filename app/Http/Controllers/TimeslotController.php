@@ -83,11 +83,20 @@ class TimeslotController extends Controller
     public function attachUser(Timeslot $timeslot, Request $request)
     {
 
-        $group = Group::find($timeslot->group_id);
-        $group->users()->detach($request->user());
-        $group->users()->attach($request->user(), ['claimed_timeslot_id' => $timeslot->id]);
+        $request->user()->groups()->updateExistingPivot($timeslot->group_id, ['claimed_timeslot_id' => $timeslot->id]);
 
-        return redirect()->back();
+        //return redirect(route('secrethops'));
+        //return redirect()->back();
+        return to_route('secrethops');
+    }
+
+    public function detachUser(Timeslot $timeslot, Request $request)
+    {
+        //$group = Group::find($timeslot->group_id);
+        //updateExistingPivot
+        $request->user()->groups()->updateExistingPivot($timeslot->group_id, ['claimed_timeslot_id' => null]);
+        //return redirect(route('secrethops'));
+        return to_route('secrethops');
     }
 
     /**
@@ -121,7 +130,8 @@ class TimeslotController extends Controller
             ->with('timeslots')
             ->get();
 
-        $groups = $groups->append(['canClaimTimeslot'])->groupBy('venue_id')->toArray();
+        $groups = $groups->append(['canClaimTimeslot', 'claimedTimeslot'])->groupBy('venue_id')->toArray();
+        //dd($groups);
         $venueIds = array_keys($groups);
 
         $venues = venue::whereIn('id', $venueIds)->select('id', 'address', 'name')->get();
@@ -134,9 +144,9 @@ class TimeslotController extends Controller
                 'groups' => (isset($groups[$venue->id]) ? $groups[$venue->id] : [])
             ];
         }
-
+        //dd($data);
         return Inertia::render('Timeslot/Index', [
-            'data'  => $data,
+            'data'  => Inertia::always($data),
         ]);
     }
 }
